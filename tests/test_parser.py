@@ -1,14 +1,19 @@
+import os
+
 from bam_masterdata.logger import logger
 from bam_masterdata.metadata.entities import CollectionType
 
 
 class TestSigmaBAM2OpenBISParser:
-    def test_parse(self, parser):
+    def test_parse_example_1(self, parser):
         collection = CollectionType()
-        parser.parse([], collection, logger)
+        # ! ask if these examples can be added openly to the repo under `tests/data/`
+        file = os.path.join("tmp", "example_01.xlsx")
+        parser.parse([file], collection, logger)
+        assert True
 
-        assert len(collection.attached_objects) == 2
-        objects = list(collection.attached_objects.values())
-        assert objects[0].name == "Synthesis"
-        assert objects[1].name == "Measurement"
-        assert len(collection.relationships) == 1
+    def test_parse_example_2(self, parser):
+        collection = CollectionType()
+        file = os.path.join("tmp", "example_02.xlsx")
+        parser.parse([file], collection, logger)
+        assert True

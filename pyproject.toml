@@ -28,7 +28,7 @@ maintainers = [
 license = { file = "LICENSE" }
 dependencies = [
   "pybis~=1.37.1rc4",
-  "openpyxl",
+  "pandas",
   "bam-masterdata>=0.6.2",
 ]
 
