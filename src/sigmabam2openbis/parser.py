@@ -2,7 +2,7 @@ from bam_masterdata.datamodel.object_types import ExperimentalStep
 from bam_masterdata.parsing import AbstractParser
 
 
-class SigmaAtBAMParser(AbstractParser):
+class SigmaBAM2OpenBISParser(AbstractParser):
     def parse(self, files, collection, logger):
         synthesis = ExperimentalStep(name="Synthesis")
         synthesis_id = collection.add(synthesis)

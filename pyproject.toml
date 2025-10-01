@@ -23,6 +23,7 @@ authors = [
 ]
 maintainers = [
   { name = "Tom Rousseau", email = "tom.rousseau@bam.de" },
+  { name = "Jose M. Pizarro", email = "jose.pizarro-blanco@bam.de" },
 ]
 license = { file = "LICENSE" }
 dependencies = [
@@ -130,4 +131,4 @@ where = ["src"]
 write_to = "src/sigmabam2openbis/_version.py"
 
 [project.entry-points."bam.parsers"]
-sigmaatbam_parser_entry_point = "sigmabam2openbis:sigmaatbam_parser_entry_point"
+sigmabam2openbis_parser_entry_point = "sigmabam2openbis:sigmabam2openbis_parser_entry_point"
