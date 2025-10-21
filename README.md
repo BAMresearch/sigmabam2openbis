@@ -1,5 +1,9 @@
 
-<!-- Add description and pip install bash action if you release as a PyPI package -->
+You can use this package to parse SigmaBAM files in openBIS. There are two resources used for automating the parsing of such files:
+
+1. Using the [_marimo_](https://marimo.io/) tutorial from `tutorials/parser_tutorial.py`. This tutorial uses the parser class defined in `src/sigmabam2openbis/parser.py` and the [`bam-masterdata`](https://github.com/BAMresearch/bam-masterdata) parser infrastructure. **We recommend using this tutorial**.
+2. Using the _Jupyter notebook_ from `tutorials/chemical_data_inventory_openbis_mapper_1_0.ipynb`. This tutorial uses [PyBIS](https://pypi.org/project/pybis/).
+
 
 ## Development
 
