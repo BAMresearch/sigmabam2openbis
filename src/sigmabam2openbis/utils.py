@@ -5,28 +5,6 @@ import pandas as pd
 from sigmabam2openbis.maps import NOTE_COLUMNS
 
 
-def get_bam_username(name: str = "", uppercase: bool = False) -> str | None:
-    # """Convert a person's full name into a BAM path format."""
-    if not name:
-        return None
-
-    # German umlaut replacements
-    de_replacements = {"ä": "ae", "ö": "oe", "ü": "ue", "Ä": "Ae", "Ö": "Oe", "Ü": "Ue"}
-    for original, replacement in de_replacements.items():
-        name = name.replace(original, replacement)
-
-    # Defining username format
-    name_parts = name.strip().split()
-    if len(name_parts) != 2:
-        return None
-    first_letter = name_parts[0][0]
-    last_name = name_parts[1][:7]
-    username = f"{first_letter}{last_name}"
-    if uppercase:
-        return username.upper()  # useful for openBIS space names
-    return username
-
-
 def build_notes(row):
     """
     Build 'Notes' by concatenating values from specific columns.

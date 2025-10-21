@@ -29,7 +29,7 @@ license = { file = "LICENSE" }
 dependencies = [
   "pybis~=1.37.1rc4",
   "pandas",
-  "bam-masterdata>=0.6.2",
+  "bam-masterdata>=0.8.2",
 ]
 
 [project.urls]
@@ -43,6 +43,9 @@ dev = [
   "pytest",
   "pytest-timeout",
   "pytest-cov",
+]
+tuto = [
+  "marimo",
 ]
 
 [tool.ruff]

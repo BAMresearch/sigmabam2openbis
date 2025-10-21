@@ -1,9 +1,10 @@
 import pandas as pd
 from bam_masterdata.datamodel.object_types import Chemical
 from bam_masterdata.parsing import AbstractParser
+from bam_masterdata.utils.users import get_bam_username
 
 from sigmabam2openbis.maps import ALLOWED_PC_CODES, MAPPING_COLUMNS
-from sigmabam2openbis.utils import build_notes, get_bam_username
+from sigmabam2openbis.utils import build_notes
 
 
 class SigmaBAM2OpenBISParser(AbstractParser):
@@ -16,6 +17,15 @@ class SigmaBAM2OpenBISParser(AbstractParser):
         self.RESPONSIBLE_SOURCE = "AntragstellerIn"  # or "Gefahrstoffkoordinator*in"
 
     def get_value_as_str(self, value) -> str:
+        """
+        Gets the value as a stripped string, or an empty string if the value is NaN or empty.
+
+        Args:
+            value: The value to convert.
+
+        Returns:
+            str: The stripped string value or an empty string if `value` is NaN or empty.
+        """
         if pd.isna(value) or not value:
             return ""
         return str(value).strip()
@@ -33,22 +43,16 @@ class SigmaBAM2OpenBISParser(AbstractParser):
                 if not umgang_id:
                     logger.error(f"Missing or empty 'Umgang-Id' in row {i + 2}")
                     continue
-                # ! ask if zfill(4) is enough or we should increase this --> it might conflict with other chemicals in the database!!!!
                 umgang_id = umgang_id.zfill(4)
-
-                # Code establishes if the object Chemical exists or not in the database and either creates or updates it
-                # ! deleted `generate_code()`
-                entity = self.get_value_as_str(chemical_row.get("Organisationseinheit"))
-                if entity:
-                    # ! one can overwrite code
-                    code = f"CHEM-{entity}-{umgang_id}"
-                    # chemical.code = code
-                    # ? check this, as we need `space.code` and `project.code`; something like /X.1_MATERIALS/CONSUMABLES/CHEM-<entity>-<umgang_id>
-                    # ! this is assigned by openBIS as indeed /space.code/project.code/code, so no need to assign
-                    # identifier_prefix =f"/{space.code}/{project.code}/{code}"
 
                 # Create our new Chemical object
                 chemical = Chemical()
+
+                # Code establishes if the object Chemical exists or not in the database and either creates or updates it
+                entity = self.get_value_as_str(chemical_row.get("Organisationseinheit"))
+                if entity:
+                    code = f"CHEM-{entity}-{umgang_id}"
+                    chemical.code = code
 
                 # All columns mapped directly
                 # TODO check Konzentration and Dichte
@@ -56,36 +60,34 @@ class SigmaBAM2OpenBISParser(AbstractParser):
                     val = self.get_value_as_str(chemical_row.get(source_col))
                     setattr(chemical, final_col, val)
 
-                # Responsible person is an OBJECT (PERSON.BAM)
-                # ! changed get_bam_path() for get_bam_username()
+                # Responsible person is an OBJECT (PERSON.BAM) reference
                 if self.RESPONSIBLE_SOURCE in chemical_row:
                     val = self.get_value_as_str(
                         chemical_row.get(self.RESPONSIBLE_SOURCE)
                     )
-                    username = get_bam_username(name=val, uppercase=True)
-                    responsible_person = f"/BAM_GLOBAL/BAM_DATA/{username}"
-                    # chemical.responsible_person = responsible_person
+                    lastname, firstname = val.strip().split(",")
+                    userid = get_bam_username(
+                        firstname=firstname, lastname=lastname
+                    ).upper()
+                    chemical.responsible_person = f"/BAM_GLOBAL/BAM_DATA/{userid}"
 
-                # OE (Organisationseinheit) is a VOCABULARY (DIVISIONS)
-                # ! deleted get_division_name()
-                division_code = self.get_value_as_str(
-                    chemical_row.get("Organisationseinheit")
-                )
-                if division_code:
-                    chemical.bam_oe = f"OE_{division_code}"
+                # OE (Organisationseinheit) is a CONTROLLEDVOCABULARY (DIVISIONS)
+                if entity:
+                    chemical.bam_oe = f"OE_{entity}"
 
                 # Checks if any column related to hazardous substances (H-Sätze, EUH-Sätze, P-Sätze, CMR) is non-empty
+                hazardous_substance = False
                 for col in ["H-Sätze", "EUH-Sätze", "P-Sätze", "CMR"]:
                     val = self.get_value_as_str(chemical_row.get(col))
                     if val:
-                        chemical.hazardous_substance = True
+                        hazardous_substance = True
                         break
+                chemical.hazardous_substance = hazardous_substance
 
                 # Notes
                 chemical.notes = build_notes(chemical_row)
 
                 # Product category
-                # ! deleted `extract_pc_code()`
                 pc_code = self.get_value_as_str(
                     chemical_row.get("Produktkategorie", "")
                 ).split()[0]
@@ -93,7 +95,6 @@ class SigmaBAM2OpenBISParser(AbstractParser):
                     chemical.product_category = pc_code
 
                 # Complete BAM location
-                # ! deleted `concat_location()`
                 bam_location_complete = []
                 for col in ["Liegenschaft", "Haus", "Etage", "Raum-Nr"]:
                     val = self.get_value_as_str(chemical_row.get(col))
