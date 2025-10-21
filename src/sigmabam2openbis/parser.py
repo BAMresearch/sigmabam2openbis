@@ -58,6 +58,16 @@ class SigmaBAM2OpenBISParser(AbstractParser):
                 # TODO check Konzentration and Dichte
                 for source_col, final_col in MAPPING_COLUMNS.items():
                     val = self.get_value_as_str(chemical_row.get(source_col))
+                    if source_col in ["Konzentration [%]", "Dichte [g/cm\u00b3]"]:
+                        try:
+                            val = float(val)
+                        except ValueError:  # not a float number
+                            continue
+                        if source_col == "Konzentration [%]":
+                            if val < 0.0 or val > 100.0:
+                                logger.warning(
+                                    f"Concentration value '{val}' out of range (0-100)% in row with Umgang-Id {umgang_id}. Please, check the excel."
+                                )
                     setattr(chemical, final_col, val)
 
                 # Responsible person is an OBJECT (PERSON.BAM) reference

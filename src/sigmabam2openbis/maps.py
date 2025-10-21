@@ -4,8 +4,8 @@ MAPPING_COLUMNS = {
     "Synonyme": "alias",
     "CAS-Nr": "cas_number",
     "Hersteller": "manufacturer",
-    # "Konzentration [%]": "concentration",
-    # "Dichte [g/cm\u00b3]": "density_gram_per_cubic_cm",
+    "Konzentration [%]": "concentration",
+    "Dichte [g/cm\u00b3]": "density_gram_per_cubic_cm",
 }
 
 # Notes content
