@@ -30,7 +30,8 @@ class SigmaBAM2OpenBISParser(AbstractParser):
             value: The value to convert.
 
         Returns:
-            str: The stripped string value or an empty string if `value` is NaN or empty.
+            str: The stripped string value or an empty string
+            if `value` is NaN or empty.
         """
         if pd.isna(value) or not value:
             return ""
@@ -73,8 +74,8 @@ class SigmaBAM2OpenBISParser(AbstractParser):
                         if source_col == "Konzentration [%]":
                             if val < 0.0 or val > 100.0:
                                 logger.warning(
-                                        f"Concentration value '{val}' out of range (0-100)% in row with "
-                                        f"Umgang-Id {umgang_id}. Please, check the excel."
+                                f"Concentration value '{val}' out of range (0-100)%"
+                                f"Umgang-Id {umgang_id}. Please, check the excel."
                                 )
                     setattr(chemical, final_col, val)
 
@@ -119,13 +120,15 @@ class SigmaBAM2OpenBISParser(AbstractParser):
                 if pc_code:
                     chemical.product_category = pc_code
                     if len(matches) > 1:
-                        logger.info(f"Multiple PC codes found in row with Umgang-Id {umgang_id}'"
-                                    f"pc_code used: {pc_code}."
+                        logger.info(
+                        f"Multiple PC codes found in row with Umgang-Id {umgang_id}'"
+                        f"pc_code used: {pc_code}."
                                     )
                 else:
                     if raw_pc:  # non-empty but unusable
-                        logger.warning(f"Unable to map Produktkategorie '{raw_pc}' to an allowed PC code in row with"
-                                       f"Umgang-Id {umgang_id}. Please, check the excel."
+                        logger.warning(
+                f"Unable to map Produktkategorie '{raw_pc}' to an allowed PC code"
+                f"Umgang-Id {umgang_id}. Please, check the excel."
                         )
 
 
@@ -135,8 +138,8 @@ class SigmaBAM2OpenBISParser(AbstractParser):
                     val = self.get_value_as_str(chemical_row.get(col))
                     if not val:
                         logger.warning(
-                            f"Missing value for BAM location column '{col}' in row with"
-                            f"Umgang-Id {umgang_id}. Please, check the excel."
+                        f"Missing value for BAM location column '{col}'"
+                        f"Umgang-Id {umgang_id}. Please, check the excel."
                         )
                         continue
                     bam_location_complete.append(val)
