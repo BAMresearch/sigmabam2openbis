@@ -5,7 +5,6 @@ from bam_masterdata.datamodel.object_types import Chemical
 from bam_masterdata.parsing import AbstractParser
 from bam_masterdata.utils.users import get_bam_username
 
-
 from sigmabam2openbis.maps import ALLOWED_PC_CODES, MAPPING_COLUMNS
 from sigmabam2openbis.utils import build_notes
 
