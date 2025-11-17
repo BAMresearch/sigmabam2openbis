@@ -2,6 +2,7 @@ import pandas as pd
 from bam_masterdata.datamodel.object_types import Chemical
 from bam_masterdata.parsing import AbstractParser
 from bam_masterdata.utils.users import get_bam_username
+import re
 
 from sigmabam2openbis.maps import ALLOWED_PC_CODES, MAPPING_COLUMNS
 from sigmabam2openbis.utils import build_notes
@@ -98,11 +99,24 @@ class SigmaBAM2OpenBISParser(AbstractParser):
                 chemical.notes = build_notes(chemical_row)
 
                 # Product category
-                pc_code = self.get_value_as_str(
-                    chemical_row.get("Produktkategorie", "")
-                ).split()[0]
-                if pc_code in ALLOWED_PC_CODES:
+                raw_pc = self.get_value_as_str(chemical_row.get("Produktkategorie", ""))
+
+                # Extract tokens like PC0, PC21, PC9A, PC32, etc.
+                matches = re.findall(r"\bPC\d+[A-Z]?\b", raw_pc, flags=re.IGNORECASE)
+                matches = [m.upper() for m in matches]
+
+                # First allowed match
+                pc_code = next((m for m in matches if m in ALLOWED_PC_CODES), None)
+
+                if pc_code:
                     chemical.product_category = pc_code
+                    if len(matches) > 1:
+                        logger.info(f"Multiple PC codes found in row with Umgang-Id {umgang_id}, using '{pc_code}'")
+                else:
+                    if raw_pc:  # non-empty but unusable
+                        logger.warning(f"Unable to map Produktkategorie '{raw_pc}' to an allowed PC code in row with Umgang-Id {umgang_id}"
+        )
+
 
                 # Complete BAM location
                 bam_location_complete = []
