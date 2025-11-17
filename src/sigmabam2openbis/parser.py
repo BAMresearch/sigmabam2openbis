@@ -1,6 +1,6 @@
 import re
-import pandas as pd
 
+import pandas as pd
 from bam_masterdata.datamodel.object_types import Chemical
 from bam_masterdata.parsing import AbstractParser
 from bam_masterdata.utils.users import get_bam_username
@@ -13,14 +13,18 @@ class SigmaBAM2OpenBISParser(AbstractParser):
     def __init__(self):
         super().__init__()
 
-        # Choose the responsible person source from SigmaBAM either "AntragstellerIn" or "Gefahrstoffkoordinator*in"
-        # ? how is this set by the user? I think it should be a static variable and not decided by the user
-        # ? maybe the default should be "AntragstellerIn" and a fallback to "Gefahrstoffkoordinator*in" if empty?
+        # Choose the responsible person source from SigmaBAM
+        # #either "AntragstellerIn" or "Gefahrstoffkoordinator*in"
+        # ? how is this set by the user?
+        # I think it should be a static variable and not decided by the user
+        # ? maybe the default should be "AntragstellerIn"
+        # and a fallback to "Gefahrstoffkoordinator*in" if empty?
         self.RESPONSIBLE_SOURCE = "AntragstellerIn"  # or "Gefahrstoffkoordinator*in"
 
     def get_value_as_str(self, value) -> str:
         """
-        Gets the value as a stripped string, or an empty string if the value is NaN or empty.
+        Gets the value as a stripped string,
+        or an empty string if the value is NaN or empty.
 
         Args:
             value: The value to convert.
@@ -50,7 +54,8 @@ class SigmaBAM2OpenBISParser(AbstractParser):
                 # Create our new Chemical object
                 chemical = Chemical()
 
-                # Code establishes if the object Chemical exists or not in the database and either creates or updates it
+                # Code establishes if the object Chemical exists or not in the database
+                # and either creates or updates it
                 entity = self.get_value_as_str(chemical_row.get("Organisationseinheit"))
                 if entity:
                     code = f"CHEM-{entity}-{umgang_id}"
@@ -68,7 +73,8 @@ class SigmaBAM2OpenBISParser(AbstractParser):
                         if source_col == "Konzentration [%]":
                             if val < 0.0 or val > 100.0:
                                 logger.warning(
-                                    f"Concentration value '{val}' out of range (0-100)% in row with Umgang-Id {umgang_id}. Please, check the excel."
+                                        f"Concentration value '{val}' out of range (0-100)% in row with "
+                                        f"Umgang-Id {umgang_id}. Please, check the excel."
                                 )
                     setattr(chemical, final_col, val)
 
@@ -87,7 +93,8 @@ class SigmaBAM2OpenBISParser(AbstractParser):
                 if entity:
                     chemical.bam_oe = f"OE_{entity}"
 
-                # Checks if any column related to hazardous substances (H-Sätze, EUH-Sätze, P-Sätze, CMR) is non-empty
+                # Checks if any column related to hazardous substances
+                # (H-Sätze, EUH-Sätze, P-Sätze, CMR) is non-empty
                 hazardous_substance = False
                 for col in ["H-Sätze", "EUH-Sätze", "P-Sätze", "CMR"]:
                     val = self.get_value_as_str(chemical_row.get(col))
@@ -112,11 +119,14 @@ class SigmaBAM2OpenBISParser(AbstractParser):
                 if pc_code:
                     chemical.product_category = pc_code
                     if len(matches) > 1:
-                        logger.info(f"Multiple PC codes found in row with Umgang-Id {umgang_id}, using '{pc_code}'")
+                        logger.info(f"Multiple PC codes found in row with Umgang-Id {umgang_id}'"
+                                    f"pc_code used: {pc_code}."
+                                    )
                 else:
                     if raw_pc:  # non-empty but unusable
-                        logger.warning(f"Unable to map Produktkategorie '{raw_pc}' to an allowed PC code in row with Umgang-Id {umgang_id}"
-        )
+                        logger.warning(f"Unable to map Produktkategorie '{raw_pc}' to an allowed PC code in row with"
+                                       f"Umgang-Id {umgang_id}. Please, check the excel."
+                        )
 
 
                 # Complete BAM location
@@ -125,7 +135,8 @@ class SigmaBAM2OpenBISParser(AbstractParser):
                     val = self.get_value_as_str(chemical_row.get(col))
                     if not val:
                         logger.warning(
-                            f"Missing value for BAM location column '{col}' in row with Umgang-Id {umgang_id}"
+                            f"Missing value for BAM location column '{col}' in row with"
+                            f"Umgang-Id {umgang_id}. Please, check the excel."
                         )
                         continue
                     bam_location_complete.append(val)
