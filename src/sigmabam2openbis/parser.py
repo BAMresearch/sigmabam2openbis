@@ -137,13 +137,23 @@ class SigmaBAM2OpenBISParser(AbstractParser):
                     val = self.get_value_as_str(chemical_row.get(col))
                     if not val:
                         logger.warning(
-                            f"Missing value for BAM location column '{col}'"
-                            f"Umgang-Id {umgang_id}. Please, check the excel."
+                            f"Missing value for BAM location column '{col}' in row with Umgang-Id {umgang_id}"
                         )
                         continue
                     bam_location_complete.append(val)
                 if bam_location_complete:
-                    chemical.bam_location_complete = "_".join(bam_location_complete)
+                    location_str = "_".join(bam_location_complete)
+                    try:
+                        # test assignment to catch vocabulary errors
+                        chemical.bam_location_complete = location_str
+                    except ValueError:
+                        fallback = "FB_80_-1_000"
+                        logger.warning(
+                            f"Invalid BAM location '{location_str}'"
+                            f"for Umgang-Id {umgang_id}"
+                            f"Replacing with fallback '{fallback}'."
+                        )
+                        chemical.bam_location_complete = fallback
 
                 # Adding chemicals to the collection
                 collection.add(chemical)
