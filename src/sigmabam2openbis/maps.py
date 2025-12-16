@@ -19,8 +19,7 @@ NOTE_COLUMNS = [
     "H-Sätze",
     "EUH-Sätze",
     "P-Sätze",
-    "Artikelnummer (Lieferant)"
-
+    "Artikelnummer (Lieferant)",
 ]
 
 # Product Category from openBIS
