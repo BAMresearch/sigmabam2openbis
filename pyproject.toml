@@ -30,7 +30,7 @@ dependencies = [
   "pybis~=1.37.1rc4",
   "pandas",
   "bam-masterdata>=0.8.4",
-  "openbis-utils = { git = "https://github.com/BAMresearch/openbis-utils.git" }",
+  "openbis-utils @ git+https://github.com/BAMresearch/openbis-utils.git",
 ]
 
 [project.urls]
