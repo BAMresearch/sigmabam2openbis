@@ -8,7 +8,6 @@ classifiers = [
   "Intended Audience :: Science/Research",
   "Operating System :: OS Independent",
   "Programming Language :: Python",
-  "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
 ]
@@ -16,7 +15,7 @@ name = "sigmabam2openbis"
 description = "Mapper script to convert SigmaBAM chemical inventory exports into openBIS-compatible format. "
 dynamic = ["version"]
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 authors = [
   { name = "Tom Rousseau", email = "tom.rousseau@bam.de" },
   { name = "Jose M. Pizarro", email = "jose.pizarro-blanco@bam.de" },
