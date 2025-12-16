@@ -165,7 +165,7 @@ cython_debug/
 
 # VSCode settings
 .vscode/launch.json
-
+.vscode/
 # Ruff
 .ruff_cache
 
@@ -175,3 +175,6 @@ pytest-coverage.txt
 
 # and tmp files
 tmp/
+
+#tutorials
+tutorials/
